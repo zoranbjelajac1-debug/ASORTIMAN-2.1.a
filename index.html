@@ -4,9 +4,27 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
   <title>ASORTIMAN 2.1</title>
+  
+  <!-- PWA manifest -->
   <link rel="manifest" href="manifest.json">
-  <link rel="icon" href="icon.png" type="image/png">
-  <link rel="apple-touch-icon" href="icon.png">
+  
+  <!-- Standardne ikone -->
+  <link rel="icon" href="icon-192.png" type="image/png" sizes="192x192">
+  <link rel="icon" href="icon-512.png" type="image/png" sizes="512x512">
+  
+  <!-- Apple ikone (iOS) -->
+  <link rel="apple-touch-icon" href="icon-192.png" sizes="192x192">
+  <link rel="apple-touch-icon" href="icon-512.png" sizes="512x512">
+  
+  <!-- Microsoft Windows -->
+  <meta name="msapplication-TileImage" content="icon-192.png">
+  <meta name="msapplication-TileColor" content="#ffffff">
+  
+  <!-- Boje -->
+  <meta name="theme-color" content="#1f5b8e">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js">
   </script>
   <style>
