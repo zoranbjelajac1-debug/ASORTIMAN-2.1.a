@@ -142,14 +142,19 @@
             color: #2e7d32;
         }
         
+        .platform-badge.samsung {
+            background: #fff3e0;
+            color: #e65100;
+        }
+        
         .platform-badge.ios {
             background: #e3f2fd;
             color: #0d47a1;
         }
         
         .platform-badge.web {
-            background: #fff3e0;
-            color: #e65100;
+            background: #f3e5f5;
+            color: #4a148c;
         }
         
         .divider {
@@ -191,6 +196,54 @@
             color: #b71c1c;
         }
         
+        .status-msg.warning {
+            background: #fff3e0;
+            color: #e65100;
+        }
+        
+        .manual-instructions {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 16px;
+            margin-top: 16px;
+            text-align: left;
+            border: 1px solid #e9ecef;
+            display: none;
+        }
+        
+        .manual-instructions.show {
+            display: block;
+        }
+        
+        .manual-instructions h4 {
+            color: #1f5b8e;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        
+        .manual-instructions ol {
+            padding-left: 20px;
+            color: #1f3852;
+            font-size: 13px;
+            line-height: 1.8;
+        }
+        
+        .manual-instructions ol li::marker {
+            color: #1f5b8e;
+            font-weight: bold;
+        }
+        
+        .browser-detect {
+            display: inline-block;
+            padding: 3px 12px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 500;
+            margin-bottom: 12px;
+            background: #e9ecef;
+            color: #495057;
+        }
+        
         @media (max-width: 480px) {
             .install-card {
                 padding: 28px 20px;
@@ -214,12 +267,15 @@
         <h1>ASORTIMAN</h1>
         <div class="version">verzija 2.1</div>
         
+        <div id="browserInfo" class="browser-detect">🌐 Provjera preglednika...</div>
+        
         <p class="description">
             Pregled asortimana po lokacijama — jednostavno, brzo i offline.
         </p>
         
         <div class="platform-badges" style="margin-bottom: 20px;">
             <span class="platform-badge android">📱 Android</span>
+            <span class="platform-badge samsung">🔶 Samsung</span>
             <span class="platform-badge ios">🍏 iOS</span>
             <span class="platform-badge web">🌐 Web</span>
         </div>
@@ -238,15 +294,29 @@
         
         <div id="statusMsg" class="status-msg"></div>
         
+        <div id="manualInstructions" class="manual-instructions">
+            <h4>📋 Kako ručno instalirati:</h4>
+            <ol>
+                <li>Pritisnite <strong>izbornik</strong> (tri točke ili tri crte) u pregledniku</li>
+                <li>Odaberite <strong>"Dodaj na početni ekran"</strong> ili <strong>"Instaliraj"</strong></li>
+                <li>Potvrdite instalaciju</li>
+                <li>Aplikacija će se pojaviti na početnom ekranu</li>
+            </ol>
+            <p style="margin-top: 10px; font-size: 12px; color: #6c757d;">
+                💡 Ako ne vidite opciju, koristite <strong>Chrome</strong> preglednik za automatsku instalaciju.
+            </p>
+        </div>
+        
         <hr class="divider">
         
         <div style="font-size: 13px; color: #5b7c9a; margin-bottom: 12px;">
             <strong>Instrukcije:</strong>
         </div>
         <div style="font-size: 13px; color: #1f3852; text-align: left; line-height: 1.8;">
-            <strong>Android:</strong> Otvorite u Chromeu → "Dodaj na početni ekran"<br>
-            <strong>iOS:</strong> Otvorite u Safariju → "Dijeli" → "Dodaj na početni ekran"<br>
-            <strong>Desktop:</strong> Chrome → "Instaliraj aplikaciju" u adresnoj traci
+            <strong>Android (Chrome):</strong> Automatska instalacija na klik<br>
+            <strong>Samsung Internet:</strong> Ručno "Dodaj na početni ekran"<br>
+            <strong>iOS (Safari):</strong> "Dijeli" → "Dodaj na početni ekran"<br>
+            <strong>Desktop:</strong> Chrome → "Instaliraj" u adresnoj traci
         </div>
         
         <div class="footer">
@@ -255,19 +325,43 @@
     </div>
     
     <script>
-        // Detekcija platforme
-        const isAndroid = /android/i.test(navigator.userAgent);
-        const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+        // --- DETEKCIJA PREGLEDNIKA ---
+        const ua = navigator.userAgent.toLowerCase();
+        const isSamsung = /samsung/i.test(ua) || /samsungbrowser/i.test(ua);
+        const isAndroid = /android/i.test(ua);
+        const isIOS = /iphone|ipad|ipod/i.test(ua);
+        const isChrome = /chrome/i.test(ua) && !/edge/i.test(ua) && !/samsung/i.test(ua);
         const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
-        const isChrome = /chrome/i.test(navigator.userAgent) && !/edge/i.test(navigator.userAgent);
+        const isFirefox = /firefox/i.test(ua);
+        const isEdge = /edg/i.test(ua);
         
+        // --- DOM ELEMENTI ---
         const installBtn = document.getElementById('installBtn');
         const webBtn = document.getElementById('webBtn');
         const statusMsg = document.getElementById('statusMsg');
+        const browserInfo = document.getElementById('browserInfo');
+        const manualInstructions = document.getElementById('manualInstructions');
         
-        // URL vaše aplikacije
+        // URL aplikacije
         const APP_URL = 'https://zoranbjelajac1-debug.github.io/ASORTIMAN-2.1.a/index.html';
         
+        // --- Prikaz info o pregledniku ---
+        function updateBrowserInfo() {
+            let info = '';
+            if (isSamsung) info = '🔶 Samsung Internet';
+            else if (isChrome && isAndroid) info = '📱 Chrome (Android)';
+            else if (isChrome) info = '🌐 Chrome';
+            else if (isFirefox) info = '🦊 Firefox';
+            else if (isEdge) info = '🌐 Edge';
+            else if (isIOS) info = '🍏 iOS (Safari)';
+            else if (isAndroid) info = '📱 Android (drugi preglednik)';
+            else info = '🌐 Desktop preglednik';
+            
+            browserInfo.textContent = '🔍 ' + info;
+        }
+        updateBrowserInfo();
+        
+        // --- Prikaz statusa ---
         function showStatus(message, type = 'info') {
             statusMsg.textContent = message;
             statusMsg.className = 'status-msg show ' + type;
@@ -277,27 +371,38 @@
             statusMsg.className = 'status-msg';
         }
         
-        // Glavna funkcija za instalaciju
+        // --- Glavna instalacijska funkcija ---
         async function installApp() {
             hideStatus();
+            manualInstructions.classList.remove('show');
             
-            // Provjera je li već instalirano
+            // 1. Ako je već instalirano
             if (isStandalone) {
                 showStatus('✅ Aplikacija je već instalirana! Otvaram...', 'success');
-                setTimeout(() => {
-                    window.location.href = APP_URL;
-                }, 1000);
+                setTimeout(() => { window.location.href = APP_URL; }, 1000);
                 return;
             }
             
-            // 1. Pokušaj s beforeinstallprompt (Chrome na Androidu)
-            if (window.deferredPrompt) {
+            // 2. SAMSUNG INTERNET - nema beforeinstallprompt
+            if (isSamsung) {
+                showStatus('🔶 Samsung Internet ne podržava automatsku instalaciju.', 'warning');
+                manualInstructions.classList.add('show');
+                // Otvori aplikaciju
+                setTimeout(() => {
+                    window.location.href = APP_URL;
+                }, 2000);
+                return;
+            }
+            
+            // 3. CHROME na Androidu - beforeinstallprompt
+            if (isChrome && window.deferredPrompt) {
                 try {
                     const result = await window.deferredPrompt.prompt();
                     if (result.outcome === 'accepted') {
                         showStatus('✅ Instalacija započeta!', 'success');
                     } else {
-                        showStatus('ℹ️ Instalacija odbijena. Možete je pokušati kasnije.', 'info');
+                        showStatus('ℹ️ Instalacija odbijena.', 'info');
+                        manualInstructions.classList.add('show');
                     }
                     window.deferredPrompt = null;
                     return;
@@ -306,65 +411,84 @@
                 }
             }
             
-            // 2. Ako je Chrome na Androidu, ali nema prompta
-            if (isAndroid && isChrome) {
-                showStatus('ℹ️ Pritisnite "Dodaj na početni ekran" u izborniku Chromea.', 'info');
-                // Otvori aplikaciju u Chromeu
+            // 4. Chrome bez prompta (rijetko)
+            if (isChrome && isAndroid) {
+                showStatus('ℹ️ Pritisnite "Dodaj na početni ekran" u izborniku.', 'info');
+                manualInstructions.classList.add('show');
                 window.location.href = APP_URL;
                 return;
             }
             
-            // 3. iOS - Safari
+            // 5. iOS Safari
             if (isIOS) {
-                showStatus('📱 Otvorite u Safariju, pritisnite "Dijeli" → "Dodaj na početni ekran"', 'info');
+                showStatus('📱 Otvorite u Safariju, "Dijeli" → "Dodaj na početni ekran"', 'info');
+                manualInstructions.classList.add('show');
                 window.location.href = APP_URL;
                 return;
             }
             
-            // 4. Desktop ili drugi preglednici
-            showStatus('🌐 Otvorite aplikaciju u pregledniku. Ako koristite Chrome, kliknite ikonu instalacije u adresnoj traci.', 'info');
+            // 6. Firefox, Edge i drugi
+            if (isFirefox || isEdge || !isChrome) {
+                showStatus('🌐 Otvorite u Chromeu za automatsku instalaciju.', 'info');
+                manualInstructions.classList.add('show');
+                window.location.href = APP_URL;
+                return;
+            }
+            
+            // 7. Default - otvori aplikaciju
             window.location.href = APP_URL;
         }
         
-        // Gumb za instalaciju
+        // --- Event listeneri ---
         installBtn.addEventListener('click', installApp);
         
-        // Web verzija - samo otvara aplikaciju
         webBtn.addEventListener('click', function() {
             window.location.href = APP_URL;
         });
         
-        // PWA instalacijski prompt - spremamo ga za kasnije
+        // --- PWA beforeinstallprompt (samo Chrome) ---
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
             window.deferredPrompt = e;
+            
+            // Ako je Samsung, ne prikazujemo prompt
+            if (isSamsung) {
+                return;
+            }
+            
             showStatus('📲 Kliknite "Instaliraj aplikaciju" za instalaciju.', 'info');
         });
         
-        // Aplikacija je uspješno instalirana
+        // --- Aplikacija instalirana ---
         window.addEventListener('appinstalled', () => {
             showStatus('✅ Aplikacija je uspješno instalirana!', 'success');
             window.deferredPrompt = null;
         });
         
-        // Ako je već instalirano, pokažemo poruku
+        // --- Ako je već instalirano ---
         if (isStandalone) {
-            showStatus('✅ Aplikacija je već instalirana!', 'success');
-        }
-        
-        // Automatski preusmjeri ako je već instalirano nakon 2 sekunde
-        if (isStandalone) {
+            showStatus('✅ Aplikacija je već instalirana! Otvaram...', 'success');
             setTimeout(() => {
                 window.location.href = APP_URL;
-            }, 2000);
+            }, 1500);
         }
         
-        console.log('📱 ASORTIMAN Installer loaded');
-        console.log('Platform:', {
+        // --- Detekcija Samsung Internet ---
+        if (isSamsung) {
+            // Dodajemo posebnu poruku za Samsung korisnike
+            setTimeout(() => {
+                showStatus('🔶 Za instalaciju koristite "Dodaj na početni ekran" u izborniku.', 'warning');
+                manualInstructions.classList.add('show');
+            }, 500);
+        }
+        
+        console.log('📱 ASORTIMAN Installer');
+        console.log('Preglednik:', {
+            isSamsung,
             isAndroid,
+            isChrome,
             isIOS,
             isStandalone,
-            isChrome,
             hasPrompt: !!window.deferredPrompt
         });
     </script>
