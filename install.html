@@ -238,24 +238,24 @@
         installBtn.addEventListener('click', function() {
             if (isAndroid || isIOS) {
                 // Na mobilnim uređajima otvori glavnu aplikaciju
-                window.location.href = 'asortiman2.1a.html';
+                window.location.href = 'https://github.com/zoranbjelajac1-debug/ASORTIMAN-2.1.a/blob/main/index.html';
             } else {
                 // Na desktopu pokušaj PWA instalaciju
                 if (window.navigator.standalone) {
                     // Već je instalirano
-                    window.location.href = 'asortiman2.1a.html';
+                    window.location.href = 'https://github.com/zoranbjelajac1-debug/ASORTIMAN-2.1.a/blob/main/index.html';
                 } else if (window.deferredPrompt) {
                     window.deferredPrompt.prompt();
                 } else {
                     alert('📲 Otvorite ovu stranicu u Chromeu i kliknite "Instaliraj" u adresnoj traci.');
-                    window.location.href = 'asortiman2.1a.html';
+                    window.location.href = 'https://github.com/zoranbjelajac1-debug/ASORTIMAN-2.1.a/blob/main/index.html';
                 }
             }
         });
         
         // Web verzija
         webBtn.addEventListener('click', function() {
-            window.location.href = 'asortiman2.1a.html';
+            window.location.href = 'https://github.com/zoranbjelajac1-debug/ASORTIMAN-2.1.a/blob/main/index.html';
         });
         
         // PWA instalacijski prompt
@@ -266,7 +266,7 @@
         
         // Automatski preusmjeri ako je već instalirano
         if (isStandalone) {
-            window.location.href = 'asortiman2.1a.html';
+            window.location.href = 'https://github.com/zoranbjelajac1-debug/ASORTIMAN-2.1.a/blob/main/index.html';
         }
     </script>
 </body>
